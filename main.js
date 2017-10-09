@@ -1,7 +1,7 @@
 // $(()=>{
 
-var workURL = 'http://webservices.nextbus.com/service/publicJSONFeed?command=predictionsForMultiStops&a=ttc&stops=35|7300&stops=195|7300&stops=96|5041&stops=186|5041'
-var homeUrl = 'http://webservices.nextbus.com/service/publicJSONFeed?command=predictionsForMultiStops&a=ttc&stops=35|5507&stops=195|5507&stops=96|15248&stops=186|15248'
+var workURL = '//webservices.nextbus.com/service/publicJSONFeed?command=predictionsForMultiStops&a=ttc&stops=35|7300&stops=195|7300&stops=96|5041&stops=186|5041'
+var homeUrl = '//webservices.nextbus.com/service/publicJSONFeed?command=predictionsForMultiStops&a=ttc&stops=35|5507&stops=195|5507&stops=96|15248&stops=186|15248'
 var wowurl = 'http://starterapi.herokuapp.com/people/123'
 var stops = {
 	work: [7300, 5041],
@@ -42,7 +42,7 @@ var collectTimes = (pred) => {
 		// for multi busses dir = array
 		if (Array.isArray(dir.prediction)) {
 			dir.prediction.forEach(item => collected.push(collectPredData(item)))
-		} else {
+		} else if (Array.isArray(dir)) {
 			dir.forEach(item => {
 				if (item.prediction.length > 1) {
 					item.prediction.forEach(innerPred => collected.push(collectPredData(innerPred)))
@@ -50,6 +50,8 @@ var collectTimes = (pred) => {
 					collected.push(collectPredData(item.prediction))
 				}
 			})
+		} else {
+			collected.push(collectPredData(dir.prediction))
 		}
 	}
 	return collected
@@ -61,13 +63,12 @@ var buildTable = (timeData, relStops, id) => {
 	tbody.html(innerHtml)
 	relStops.forEach(stopTag => {
 		var data = timeData[stopTag].sort((a, b) => a.time - b.time)
-		console.log('sorted: ', data)
 		if (relStops.indexOf(stopTag) == 0) {
 			data.forEach(d => {
-				var time = new Date(parseInt(d.time))
+				var time = parseInt(d.time)
 				innerHtml += `<tr>
 					<td class="a-bus">${d.branch}</td>
-					<td class="a-time">${time.getMinutes()}:${time.getSeconds()} min <p><small>10:35:11am</small></p></td>
+					<td class="a-time">${timeDiff(time)} min<p><small class="text-muted">${getHMS(time)}</small></p></td>
 				</tr>`
 			})
 			tbody.html(innerHtml)
@@ -75,13 +76,13 @@ var buildTable = (timeData, relStops, id) => {
 			var tr = $(id + ' tr')
 			for (var i = 0; i < data.length; i++) {
 				var d = data[i]
-				var time = new Date(parseInt(d.time))
+				var time = parseInt(d.time)
 				if (i >= tr.length) {
 					$(id)[0].innerHTML += `<td></td><td></td><td class="b-bus">${d.branch}</td>
-					<td class="b-time">${time.getMinutes()}:${time.getSeconds()} min</td>`
+					<td class="b-time">${timeDiff(time)} min<p><small class="text-muted">${getHMS(time)}</small></p></td>`
 				} else {
 					tr[i].innerHTML += `<td class="b-bus">${d.branch}</td>
-						<td class="b-time">${time.getMinutes()}:${time.getSeconds()} min</td>`
+						<td class="b-time">${timeDiff(time)} min<p><small class="text-muted">${getHMS(time)}</small></p></td>`
 				}
 			}
 		}
@@ -94,20 +95,37 @@ var buildTable = (timeData, relStops, id) => {
 
 var collectPredData = predObj => {
 	return {
-		'branch': predObj.branch,
+		'branch': getBusNum(predObj.dirTag),
 		'time': predObj.epochTime,
 		'affectedByLayover': predObj.affectedByLayover ? true : false
 	}
 }
 
-var timeDiff = (a, b) => {
-	var a = new Date(a)
-	var b = new Date(b)
-	var diff = b - a; // this is a time in milliseconds
-	var diff_as_date = new Date(diff);
-	diff_as_date.getHours(); // hours
-	diff_as_date.getMinutes(); // minutes
-	diff_as_date.getSeconds(); // seconds
+var timeDiff = (then) => {
+	var now = new Date()
+	var then = new Date(then)
+
+	var seconds = Math.floor((then - (now))/1000);
+    var minutes = Math.floor(seconds/60);
+    var hours = Math.floor(minutes/60);
+    var days = Math.floor(hours/24);
+    
+    hours = hours-(days*24);
+    minutes = minutes-(days*24*60)-(hours*60);
+    seconds = seconds-(days*24*60*60)-(hours*60*60)-(minutes*60);
+    seconds = seconds.toString()
+    var secModified = seconds < 10 ? '0'+seconds : seconds
+	return minutes + ':' + secModified
+}
+
+var getHMS = (time) => {
+	var d = new Date(time)
+	return d.toLocaleString('en-US').split(', ')[1]
+}
+
+var getBusNum = (dirTag) => {
+	dirTag = dirTag.split('_')
+	return dirTag[dirTag.length - 1]
 }
 
 /**
