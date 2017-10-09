@@ -17,6 +17,18 @@
     	p {
     		margin-bottom: 0;
     	}
+
+    	td.a-time, td.b-time {
+    		text-align: center;
+    	}
+
+    	td p {
+    		font-size: 12px;
+    	}
+
+    	.hidden {
+    		display: none;
+    	}
     </style>
 </head>
 <body>
@@ -25,8 +37,8 @@
 
 		<div id="errors"></div>
 		<div id="home2work">
-			<h1 class="text-center">Work</h1>
-			<table class="table table-inverse">
+			<h1 class="text-center">Work<small class="hidden">...</small></h1>
+			<table class="table table-inverse table-striped table-hover">
 				<thead>
 					<tr>
 						<th colspan="2">Jane (S): <small>35/195</small></th>
@@ -40,8 +52,8 @@
 		</div>
 
 		<div id="work2home">
-			<h1 class="text-center">Home</h1>
-			<table class="table table-inverse">
+			<h1 class="text-center">Home<small class="hidden">...</small></h1>
+			<table class="table table-inverse table-striped table-hover">
 				<thead>
 					<tr>
 						<th colspan="2">Humber (E): <small>96/186</small></th>

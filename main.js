@@ -1,12 +1,12 @@
-// $(()=>{
+$(()=>{
 
 var workURL = '//webservices.nextbus.com/service/publicJSONFeed?command=predictionsForMultiStops&a=ttc&stops=35|7300&stops=195|7300&stops=96|5041&stops=186|5041'
 var homeUrl = '//webservices.nextbus.com/service/publicJSONFeed?command=predictionsForMultiStops&a=ttc&stops=35|5507&stops=195|5507&stops=96|15248&stops=186|15248'
-var wowurl = 'http://starterapi.herokuapp.com/people/123'
 var stops = {
 	work: [7300, 5041],
 	home: [15248, 5507]
 }
+var intervalRegister = []
 
 var getData = async (url) => {
 	var predictions;
@@ -15,7 +15,12 @@ var getData = async (url) => {
 			var p = data.predictions
 			if (p) {predictions = p}
 		})
-	jqxhr.fail((data, status, msg) => $('#errors').html(`<h2 class="text-center">Error</h2><code>${JSON.stringify(data.responseJSON)}</code>`))
+	await jqxhr.fail((data, status, msg) => $('#errors').html(`
+		<div class="alert alert-danger">
+			<h3 class="text-center">Error</h3>
+			<code>${JSON.stringify(data.responseJSON)}</code>
+		</div>
+	`))
 	return predictions;
 }
 
@@ -131,17 +136,18 @@ var getBusNum = (dirTag) => {
 /**
  * MAIN
  */
-
 var doMain = async (url, stops, id) => {
+	var loading = $(id.split(' ')[0] + ' h1 > small')
+	loading.toggleClass('hidden')
 	var predictions = await getData(url)
+	loading.toggleClass('hidden')
 	var stopPredTimes = getStopPredTimes(predictions)
 	buildTable(stopPredTimes, stops, id)
 }
 
 $('#home2work h1').on('click', () => doMain(workURL, stops.work, '#home2work tbody'))
-// $('#home2work h1').on('click', () => getData(wowurl))
 $('#work2home h1').on('click', () => doMain(homeUrl, stops.home, '#work2home tbody'))
 
 
 
-// });
+});
