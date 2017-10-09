@@ -5,6 +5,9 @@
     <title>home2work</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <style>
+	    body {
+	    	background-color: #fffff4;
+	    }
     	thead th {
 			text-align: center;
     	}
@@ -29,6 +32,14 @@
     	.hidden {
     		display: none;
     	}
+
+    	tbody td.a-bus, tbody td.b-bus {
+    		padding: 12px !important;
+    	}
+
+    	h3 {
+    		color: #212529;
+    	}
     </style>
 </head>
 <body>
@@ -37,12 +48,12 @@
 
 		<div id="errors"></div>
 		<div id="home2work">
-			<h1 class="text-center">Work<small class="hidden">...</small></h1>
-			<table class="table table-inverse table-striped table-hover">
+			<h3 class="text-center">Work<small class="hidden">...</small></h3>
+			<table class="table table-striped table-hover">
 				<thead>
-					<tr>
-						<th colspan="2">Jane (S): <small>35/195</small></th>
-						<th colspan="2">Wilson (W): <small>96/186</small></th>
+					<tr class="bg-light">
+						<th colspan="2">Jane <span class="badge badge-pill badge-success">S</span><small> 35/195</small></th>
+						<th colspan="2">Wilson <span class="badge badge-pill badge-danger">W</span><small> 96/186</small></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -52,12 +63,12 @@
 		</div>
 
 		<div id="work2home">
-			<h1 class="text-center">Home<small class="hidden">...</small></h1>
-			<table class="table table-inverse table-striped table-hover">
+			<h3 class="text-center">Home<small class="hidden">...</small></h3>
+			<table class="table table-striped table-hover">
 				<thead>
-					<tr>
-						<th colspan="2">Humber (E): <small>96/186</small></th>
-						<th colspan="2">Jane (N): <small>35/195</small></th>
+					<tr class="bg-light">
+						<th colspan="2">Humber <span class="badge badge-pill badge-warning">E</span><small> 96/186</small></th>
+						<th colspan="2">Jane <span class="badge badge-pill badge-primary">N</span><small> 35/195</small></th>
 					</tr>
 				</thead>
 				<tbody>

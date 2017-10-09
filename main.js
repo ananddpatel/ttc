@@ -72,8 +72,8 @@ var buildTable = (timeData, relStops, id) => {
 			data.forEach(d => {
 				var time = parseInt(d.time)
 				innerHtml += `<tr>
-					<td class="a-bus">${d.branch}</td>
-					<td class="a-time">${timeDiff(time)} min<p><small class="text-muted">${getHMS(time)}</small></p></td>
+					<td class="a-bus alert-primary"><span class="badge badge-primary">${d.branch}</span></td>
+					<td class="a-time alert-primary">${timeDiff(time)} min<p><small class="text-muted">${getHMS(time)}</small></p></td>
 				</tr>`
 			})
 			tbody.html(innerHtml)
@@ -83,11 +83,11 @@ var buildTable = (timeData, relStops, id) => {
 				var d = data[i]
 				var time = parseInt(d.time)
 				if (i >= tr.length) {
-					$(id)[0].innerHTML += `<td></td><td></td><td class="b-bus">${d.branch}</td>
-					<td class="b-time">${timeDiff(time)} min<p><small class="text-muted">${getHMS(time)}</small></p></td>`
+					$(id)[0].innerHTML += `<td></td><td></td><td class="b-bus alert-warning"><span class="badge badge-warning">${d.branch}</span></td>
+					<td class="b-time alert-warning">${timeDiff(time)} min<p><small class="text-muted">${getHMS(time)}</small></p></td>`
 				} else {
-					tr[i].innerHTML += `<td class="b-bus">${d.branch}</td>
-						<td class="b-time">${timeDiff(time)} min<p><small class="text-muted">${getHMS(time)}</small></p></td>`
+					tr[i].innerHTML += `<td class="b-bus alert-success"><span class="badge badge-success">${d.branch}</span></td>
+						<td class="b-time alert-success">${timeDiff(time)} min<p><small class="text-muted">${getHMS(time)}</small></p></td>`
 				}
 			}
 		}
@@ -145,8 +145,8 @@ var doMain = async (url, stops, id) => {
 	buildTable(stopPredTimes, stops, id)
 }
 
-$('#home2work h1').on('click', () => doMain(workURL, stops.work, '#home2work tbody'))
-$('#work2home h1').on('click', () => doMain(homeUrl, stops.home, '#work2home tbody'))
+$('#home2work h3').on('click', () => doMain(workURL, stops.work, '#home2work tbody'))
+$('#work2home h3').on('click', () => doMain(homeUrl, stops.home, '#work2home tbody'))
 
 
 
