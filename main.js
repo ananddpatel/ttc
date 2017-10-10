@@ -1,9 +1,9 @@
 $(()=>{
 
-var workURL = 'http://webservices.nextbus.com/service/publicJSONFeed?command=predictionsForMultiStops&a=ttc&stops=35|7300&stops=195|7300&stops=96|5041&stops=186|5041'
+var workURL = 'http://webservices.nextbus.com/service/publicJSONFeed?command=predictionsForMultiStops&a=ttc&stops=35|7300&stops=195|7300&stops=96|4647&stops=186|4647'
 var homeUrl = 'http://webservices.nextbus.com/service/publicJSONFeed?command=predictionsForMultiStops&a=ttc&stops=35|5507&stops=195|5507&stops=96|15248&stops=186|15248'
 var stops = {
-	work: [7300, 5041],
+	work: [7300, 4647],
 	home: [15248, 5507]
 }
 var intervalRegister = []
