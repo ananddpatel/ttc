@@ -137,7 +137,7 @@ var getBusNum = (dirTag) => {
  * MAIN
  */
 var doMain = async (url, stops, id) => {
-	var loading = $(id.split(' ')[0] + ' h1 > small')
+	var loading = $(id.split(' ')[0] + ' h3 > small')
 	loading.toggleClass('hidden')
 	var predictions = await getData(url)
 	loading.toggleClass('hidden')
