@@ -1,0 +1,179 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1, user-scalable=0">
+	<title>myTTC</title>
+	<meta name="description" content="myTTC">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+	 crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg"
+	 crossorigin="anonymous">
+	<style>
+		body {
+			background-color: #fffff4;
+		}
+
+		/* XS styling */
+
+		@media (max-width: @screen-xs-max) {
+			.container {
+				width: inherit;
+			}
+		}
+
+		/* SM styling */
+
+		@media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+			.container {
+				width: inherit;
+			}
+		}
+
+		.cell {
+			height: 45px;
+			padding: 3px 3px;
+		}
+
+		.bus-num {
+			font-size: 12px;
+			border: 2px solid red;
+		}
+
+		.bg-off-white {
+			background-color: #f8f9fa;
+		}
+
+		.opt-selected {
+			color: white;
+			background-color: #41b883;
+			border-bottom: 4px solid #143000;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="app" class="container">
+		<h3 class="text-center">{{topHeader}}
+			<i class="fas fa-building"></i>
+		</h3>
+		<div class="row">
+			<div class="col-6">
+				<bus-nums @bus-num-selected="selectBusNum" :options="top1Options"></bus-nums>
+			</div>
+			<div class="col-6">
+				<bus-nums @bus-num-selected="selectBusNum" :options="top2Options"></bus-nums>
+			</div>
+			<div class="col-6 px-0">
+				<div class="cell alert-primary" v-for="num in 5">asd</div>
+			</div>
+			<div class="col-6 px-0">
+				<div class="cell alert-primary" v-for="num in 5">asd</div>
+			</div>
+		</div>
+		<h3 class="text-center mt-1">{{bottomHeader}}
+			<i class="fab fa-fort-awesome"></i>
+		</h3>
+		<div class="row">
+			<div class="col-6">
+				<bus-nums @bus-num-selected="selectBusNum" :options="bottom1Options"></bus-nums>
+			</div>
+			<div class="col-6">
+				<bus-nums @bus-num-selected="selectBusNum" :options="bottom2Options"></bus-nums>
+			</div>
+			<div class="col-6 px-0">
+				<div class="cell alert-primary" v-for="num in 5">asd</div>
+			</div>
+			<div class="col-6 px-0">
+				<div class="cell alert-primary" v-for="num in 5">asd</div>
+			</div>
+		</div>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script>
+		let busNums = Vue.component('bus-nums', {
+			props: ['options'],
+			data: function () {
+				return {
+
+				}
+			},
+			template: `
+					<div class="d-flex flex-wrap align-content-between justify-content-around bg-off-white py-1">
+					<span
+						v-for="opt in options"
+						unselectable="on"
+						:class="{ 'opt-selected': opt.selected}"
+						class="badge"
+						@click="$emit('bus-num-selected', opt)">
+							{{opt.name}}
+					</span>
+					</div>`
+		})
+		let app = new Vue({
+			el: '#app',
+			data: {
+				topHeader: 'Work',
+				bottomHeader: 'Home',
+				top1Options: [
+					{ name: 'All', value: 'all', selected: true },
+					{ name: '35-S', value: 35, selected: false },
+					{ name: '195-S', value: 195, selected: false },
+					{ name: '120-E', value: 120, selected: false },
+					{ name: '35-N', value: 35, selected: false },
+					{ name: '195-N', value: 195, selected: false },
+					{ name: '120-W', value: 120, selected: false }
+				],
+				top2Options: [
+					{ name: 'All', value: 'all', selected: true },
+					{ name: '84-E', value: 84, selected: false },
+					{ name: '186-E', value: 186, selected: false },
+					{ name: '96-E', value: 96, selected: false },
+					{ name: '165-E', value: 165, selected: false },
+					{ name: '118-E', value: 118, selected: false },
+					{ name: '119-E', value: 119, selected: false }
+				],
+				bottom1Options: [
+					{ name: 'All', value: 'all', selected: true },
+					{ name: '120-W', value: 120, selected: false },
+					{ name: '186-W', value: 186, selected: false },
+					{ name: '96-W', value: 96, selected: false },
+					{ name: '165-W', value: 165, selected: false },
+					{ name: '118-W', value: 118, selected: false },
+					{ name: '119-W', value: 119, selected: false }
+				],
+				bottom2Options: [
+					{ name: 'All', value: 'all', selected: true },
+					{ name: '35-N', value: 35, selected: false },
+					{ name: '195-N', value: 195, selected: false },
+				],
+			},
+			computed: {
+
+			},
+			methods: {
+				isSelected(opt) {
+					console.log(opt)
+					if (opt.selected) {
+						return true
+					} else {
+						return false
+					}
+				},
+				selectBusNum(opt) {
+					opt.selected = !opt.selected;
+				}
+			},
+			created() {
+				console.log(this)
+			}
+		})
+
+	</script>
+</body>
+
+</html>
