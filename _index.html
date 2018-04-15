@@ -56,15 +56,15 @@
 
 <body>
 	<div id="app" class="container">
-		<h3 class="text-center">{{topHeader}}
+		<h3 @click="topClicked()" class="text-center">{{topHeader}}
 			<i class="fas fa-building"></i>
 		</h3>
 		<div class="row">
 			<div class="col-6">
-				<bus-nums @bus-num-selected="selectBusNum" :options="top1Options"></bus-nums>
+				<bus-nums @all-selected="allSelected" @bus-num-selected="selectBusNum" :options="top1Options"></bus-nums>
 			</div>
 			<div class="col-6">
-				<bus-nums @bus-num-selected="selectBusNum" :options="top2Options"></bus-nums>
+				<bus-nums @all-selected="allSelected" @bus-num-selected="selectBusNum" :options="top2Options"></bus-nums>
 			</div>
 			<div class="col-6 px-0">
 				<div class="cell alert-primary" v-for="num in 5">asd</div>
@@ -78,10 +78,10 @@
 		</h3>
 		<div class="row">
 			<div class="col-6">
-				<bus-nums @bus-num-selected="selectBusNum" :options="bottom1Options"></bus-nums>
+				<bus-nums @all-selected="allSelected" @bus-num-selected="selectBusNum" :options="bottom1Options"></bus-nums>
 			</div>
 			<div class="col-6">
-				<bus-nums @bus-num-selected="selectBusNum" :options="bottom2Options"></bus-nums>
+				<bus-nums @all-selected="allSelected" @bus-num-selected="selectBusNum" :options="bottom2Options"></bus-nums>
 			</div>
 			<div class="col-6 px-0">
 				<div class="cell alert-primary" v-for="num in 5">asd</div>
@@ -99,11 +99,17 @@
 			props: ['options'],
 			data: function () {
 				return {
-
+					allSelected: false
+				}
+			},
+			methods: {
+				toggleAll() {
+					this.allSelected = !this.allSelected;
 				}
 			},
 			template: `
 					<div class="d-flex flex-wrap align-content-between justify-content-around bg-off-white py-1">
+					<span @click="toggleAll(); $emit('all-selected', options)" class="badge" :class=" {'opt-selected': allSelected} ">all</span>
 					<span
 						v-for="opt in options"
 						unselectable="on"
@@ -114,43 +120,60 @@
 					</span>
 					</div>`
 		})
+
+		Vue.component('pred-cells', {
+			props: ['time'],
+			data: function () {
+				return {
+
+				}
+			},
+			template: `
+				<div class="cell alert-primary" v-for="num in 5">asd</div>
+			`
+		})
+
 		let app = new Vue({
 			el: '#app',
 			data: {
 				topHeader: 'Work',
 				bottomHeader: 'Home',
 				top1Options: [
-					{ name: 'All', value: 'all', selected: true },
-					{ name: '35-S', value: 35, selected: false },
-					{ name: '195-S', value: 195, selected: false },
-					{ name: '120-E', value: 120, selected: false },
-					{ name: '35-N', value: 35, selected: false },
-					{ name: '195-N', value: 195, selected: false },
-					{ name: '120-W', value: 120, selected: false }
+					// { name: 'All', num: 'all', stopTag: 0, selected: true },
+					{ name: '35-S', num: 35, stopTag: 7300, selected: false },
+					{ name: '195-S', num: 195, stopTag: 7300, selected: false },
+					{ name: '120-E', num: 120, stopTag: 7300, selected: false },
+					{ name: '35-N', num: 35, stopTag: 8405, selected: false },
+					{ name: '195-N', num: 195, stopTag: 8405, selected: false },
+					{ name: '120-W', num: 120, stopTag: 8405, selected: false }
 				],
+				top1Preds: null,
 				top2Options: [
-					{ name: 'All', value: 'all', selected: true },
-					{ name: '84-E', value: 84, selected: false },
-					{ name: '186-E', value: 186, selected: false },
-					{ name: '96-E', value: 96, selected: false },
-					{ name: '165-E', value: 165, selected: false },
-					{ name: '118-E', value: 118, selected: false },
-					{ name: '119-E', value: 119, selected: false }
+					// { name: 'All', num: 'all', stopTag: 0, selected: true },
+					{ name: '84-E', num: 84, stopTag: 8363, selected: false },
+					{ name: '186-E', num: 186, stopTag: 5041, selected: false },
+					{ name: '96-E', num: 96, stopTag: 5041, selected: false },
+					{ name: '165-E', num: 165, stopTag: 5041, selected: false },
+					{ name: '118-E', num: 118, stopTag: 5041, selected: false },
+					{ name: '119-E', num: 119, stopTag: 5041, selected: false }
 				],
+				top2Preds: null,
 				bottom1Options: [
-					{ name: 'All', value: 'all', selected: true },
-					{ name: '120-W', value: 120, selected: false },
-					{ name: '186-W', value: 186, selected: false },
-					{ name: '96-W', value: 96, selected: false },
-					{ name: '165-W', value: 165, selected: false },
-					{ name: '118-W', value: 118, selected: false },
-					{ name: '119-W', value: 119, selected: false }
+					// { name: 'All', num: 'all', stopTag: 0, selected: true },
+					{ name: '120-W', num: 120, stopTag: '15290_ar', selected: false },
+					{ name: '186-W', num: 186, stopTag: 15108, selected: false },
+					{ name: '96-W', num: 96, stopTag: 14827, selected: false },
+					{ name: '165-W', num: 165, stopTag: 14318, selected: false },
+					{ name: '118-W', num: 118, stopTag: '14319_ar', selected: false },
+					{ name: '119-W', num: 119, stopTag: '14319_ar', selected: false }
 				],
+				bottom1Preds: null,
 				bottom2Options: [
-					{ name: 'All', value: 'all', selected: true },
-					{ name: '35-N', value: 35, selected: false },
-					{ name: '195-N', value: 195, selected: false },
+					// { name: 'All', num: 'all', stopTag: 0, selected: true },
+					{ name: '35-N', num: 35, stopTag: 8970, selected: false },
+					{ name: '195-N', num: 195, stopTag: 8970, selected: false },
 				],
+				bottom2Preds: null,
 			},
 			computed: {
 
@@ -166,10 +189,50 @@
 				},
 				selectBusNum(opt) {
 					opt.selected = !opt.selected;
+				},
+				allSelected(options) {
+					options.forEach(o => o.selected = !o.selected)
+				},
+				getStopPredTimes(predictions) {
+					let times = {} //
+					preds.forEach(pred => {
+						var tag = pred.stopTag
+						stopTimes = times[tag] // key
+						if (!times[tag]) {
+							times[tag] = collectTimes(pred);
+						}
+						else {
+							times[tag] = times[tag].concat(collectTimes(pred));
+						}
+					})
+					console.log(times);
+				},
+				topClicked() {
+					console.log('topClicked');
+
+					const base = 'http://webservices.nextbus.com/service/publicJSONFeed?command=predictionsForMultiStops&a=ttc&stops='
+					const top1QueryParams = this.top1Options.filter(s => s.selected).map(s => s.num + '|' + s.stopTag).join('&stops')
+					const top2QueryParams = this.top2Options.filter(s => s.selected).map(s => s.num + '|' + s.stopTag).join('&stops')
+
+					axios.get(base + top1QueryParams)
+						.then(d => {
+							console.log(d.data.predictions);
+							console.log(this.top1Preds);
+
+							this.top1Preds = d.data.predictions
+							console.log(this.top1Preds);
+						})
+						.catch(e => console.log(e))
+
+					axios.get(base + top2QueryParams)
+						.then(d => {
+							this.top2Preds = d.data.predictions
+						})
+						.catch(e => console.log(e))
 				}
 			},
 			created() {
-				console.log(this)
+				console.log(this._data)
 			}
 		})
 
