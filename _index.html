@@ -61,16 +61,18 @@
 		</h3>
 		<div class="row">
 			<div class="col-6">
-				<bus-nums @all-selected="allSelected" @bus-num-selected="selectBusNum" :options="top1Options"></bus-nums>
+				<bus-nums @all-toggle="allSelected" @bus-num-selected="selectBusNum" :options="top1Options"></bus-nums>
 			</div>
 			<div class="col-6">
-				<bus-nums @all-selected="allSelected" @bus-num-selected="selectBusNum" :options="top2Options"></bus-nums>
+				<bus-nums @all-toggle="allSelected" @bus-num-selected="selectBusNum" :options="top2Options"></bus-nums>
 			</div>
 			<div class="col-6 px-0">
-				<div class="cell alert-primary" v-for="num in 5">asd</div>
+				<!-- <div class="cell alert-primary" v-for="num in 5">asd</div> -->
+				<pred-cells v-if="top1Preds" :times="top1Preds"></pred-cells>
 			</div>
 			<div class="col-6 px-0">
-				<div class="cell alert-primary" v-for="num in 5">asd</div>
+				<!-- <div class="cell alert-primary" v-for="num in 5">asd</div> -->
+				<pred-cells v-if="top2Preds" :times="top2Preds"></pred-cells>
 			</div>
 		</div>
 		<h3 class="text-center mt-1">{{bottomHeader}}
@@ -78,10 +80,10 @@
 		</h3>
 		<div class="row">
 			<div class="col-6">
-				<bus-nums @all-selected="allSelected" @bus-num-selected="selectBusNum" :options="bottom1Options"></bus-nums>
+				<bus-nums @all-toggle="allSelected" @bus-num-selected="selectBusNum" :options="bottom1Options"></bus-nums>
 			</div>
 			<div class="col-6">
-				<bus-nums @all-selected="allSelected" @bus-num-selected="selectBusNum" :options="bottom2Options"></bus-nums>
+				<bus-nums @all-toggle="allSelected" @bus-num-selected="selectBusNum" :options="bottom2Options"></bus-nums>
 			</div>
 			<div class="col-6 px-0">
 				<div class="cell alert-primary" v-for="num in 5">asd</div>
@@ -99,17 +101,26 @@
 			props: ['options'],
 			data: function () {
 				return {
-					allSelected: false
+					allSelected: true
 				}
 			},
 			methods: {
 				toggleAll() {
 					this.allSelected = !this.allSelected;
+					this.$emit('all-toggle', this.options, this.allSelected);
+				}
+			},
+			mounted() {
+				for (const o of this.options) {
+					if (!this.options) {
+						this.allSelected = false;
+						break;
+					}
 				}
 			},
 			template: `
 					<div class="d-flex flex-wrap align-content-between justify-content-around bg-off-white py-1">
-					<span @click="toggleAll(); $emit('all-selected', options)" class="badge" :class=" {'opt-selected': allSelected} ">all</span>
+					<span @click="toggleAll()" class="badge" :class=" {'opt-selected': allSelected} ">all</span>
 					<span
 						v-for="opt in options"
 						unselectable="on"
@@ -122,15 +133,51 @@
 		})
 
 		Vue.component('pred-cells', {
-			props: ['time'],
+			props: ['times'],
 			data: function () {
 				return {
 
 				}
 			},
+			methods: {
+				timeDiff(then) {
+					// debugger;
+					then = new Date(then)
+					let now = new Date()
+
+					let seconds = Math.floor((then - (now)) / 1000);
+					let minutes = Math.floor(seconds / 60);
+					let hours = Math.floor(minutes / 60);
+					let days = Math.floor(hours / 24);
+
+					hours = hours - (days * 24);
+					minutes = minutes - (days * 24 * 60) - (hours * 60);
+					seconds = seconds - (days * 24 * 60 * 60) - (hours * 60 * 60) - (minutes * 60);
+					seconds = seconds.toString()
+					let secModified = seconds < 10 ? '0' + seconds : seconds;
+					return minutes + ':' + secModified
+				},
+				getHMS(time) {
+					const d = new Date(time)
+					return d.toLocaleString('en-US').split(', ')[1]
+				}
+			},
 			template: `
-				<div class="cell alert-primary" v-for="num in 5">asd</div>
-			`
+    <div>
+    <div v-for="(val, key) in times" :key="key">
+        <h5>{{key}}</h5>
+        <div v-for="item in val" :key="item.time" class="cell alert-primary">
+            <div class="col-3">
+                <span class="badge badge-danger">{{item.branch}}</span>
+            </div>
+            <div class="col-9">
+                {{timeDiff(item.time)}}
+                <p><small>{{getHMS(item.time)}}</small></p>
+            </div>
+        </div>
+    </div>
+    </div>
+			`,
 		})
 
 		let app = new Vue({
@@ -140,38 +187,38 @@
 				bottomHeader: 'Home',
 				top1Options: [
 					// { name: 'All', num: 'all', stopTag: 0, selected: true },
-					{ name: '35-S', num: 35, stopTag: 7300, selected: false },
-					{ name: '195-S', num: 195, stopTag: 7300, selected: false },
-					{ name: '120-E', num: 120, stopTag: 7300, selected: false },
-					{ name: '35-N', num: 35, stopTag: 8405, selected: false },
-					{ name: '195-N', num: 195, stopTag: 8405, selected: false },
-					{ name: '120-W', num: 120, stopTag: 8405, selected: false }
+					{ name: '35-S', num: 35, stopTag: 7300, selected: true },
+					{ name: '195-S', num: 195, stopTag: 7300, selected: true },
+					{ name: '120-E', num: 120, stopTag: 7300, selected: true },
+					{ name: '35-N', num: 35, stopTag: 8405, selected: true },
+					{ name: '195-N', num: 195, stopTag: 8405, selected: true },
+					{ name: '120-W', num: 120, stopTag: 8405, selected: true }
 				],
 				top1Preds: null,
 				top2Options: [
 					// { name: 'All', num: 'all', stopTag: 0, selected: true },
-					{ name: '84-E', num: 84, stopTag: 8363, selected: false },
-					{ name: '186-E', num: 186, stopTag: 5041, selected: false },
-					{ name: '96-E', num: 96, stopTag: 5041, selected: false },
-					{ name: '165-E', num: 165, stopTag: 5041, selected: false },
-					{ name: '118-E', num: 118, stopTag: 5041, selected: false },
-					{ name: '119-E', num: 119, stopTag: 5041, selected: false }
+					{ name: '84-E', num: 84, stopTag: 8363, selected: true },
+					{ name: '186-E', num: 186, stopTag: 5041, selected: true },
+					{ name: '96-E', num: 96, stopTag: 5041, selected: true },
+					{ name: '165-E', num: 165, stopTag: 5041, selected: true },
+					{ name: '118-E', num: 118, stopTag: 5041, selected: true },
+					{ name: '119-E', num: 119, stopTag: 5041, selected: true }
 				],
 				top2Preds: null,
 				bottom1Options: [
 					// { name: 'All', num: 'all', stopTag: 0, selected: true },
-					{ name: '120-W', num: 120, stopTag: '15290_ar', selected: false },
-					{ name: '186-W', num: 186, stopTag: 15108, selected: false },
-					{ name: '96-W', num: 96, stopTag: 14827, selected: false },
-					{ name: '165-W', num: 165, stopTag: 14318, selected: false },
-					{ name: '118-W', num: 118, stopTag: '14319_ar', selected: false },
-					{ name: '119-W', num: 119, stopTag: '14319_ar', selected: false }
+					{ name: '120-W', num: 120, stopTag: '15290_ar', selected: true },
+					{ name: '186-W', num: 186, stopTag: 15108, selected: true },
+					{ name: '96-W', num: 96, stopTag: 14827, selected: true },
+					{ name: '165-W', num: 165, stopTag: 14318, selected: true },
+					{ name: '118-W', num: 118, stopTag: '14319_ar', selected: true },
+					{ name: '119-W', num: 119, stopTag: '14319_ar', selected: true }
 				],
 				bottom1Preds: null,
 				bottom2Options: [
 					// { name: 'All', num: 'all', stopTag: 0, selected: true },
-					{ name: '35-N', num: 35, stopTag: 8970, selected: false },
-					{ name: '195-N', num: 195, stopTag: 8970, selected: false },
+					{ name: '35-N', num: 35, stopTag: 8970, selected: true },
+					{ name: '195-N', num: 195, stopTag: 8970, selected: true },
 				],
 				bottom2Preds: null,
 			},
@@ -180,7 +227,6 @@
 			},
 			methods: {
 				isSelected(opt) {
-					console.log(opt)
 					if (opt.selected) {
 						return true
 					} else {
@@ -190,50 +236,79 @@
 				selectBusNum(opt) {
 					opt.selected = !opt.selected;
 				},
-				allSelected(options) {
-					options.forEach(o => o.selected = !o.selected)
+				allSelected(options, allSelectedStatus) {
+					options.forEach(o => o.selected = allSelectedStatus)
 				},
 				getStopPredTimes(predictions) {
 					let times = {} //
-					preds.forEach(pred => {
-						var tag = pred.stopTag
+					predictions.forEach(singleBusRoute => {
+						var tag = singleBusRoute.stopTag
 						stopTimes = times[tag] // key
 						if (!times[tag]) {
-							times[tag] = collectTimes(pred);
+							times[tag] = this.collectTimes(singleBusRoute);
 						}
 						else {
-							times[tag] = times[tag].concat(collectTimes(pred));
+							times[tag] = times[tag].concat(this.collectTimes(singleBusRoute));
 						}
 					})
-					console.log(times);
+					return times;
+				},
+				collectTimes(singleBusRoute) {
+					collected = []
+					var dir = singleBusRoute.direction
+					if (dir) {
+						// for route that only has 1 type of bus: dir = obj
+						// for multi busses dir = array
+						if (Array.isArray(dir.prediction)) {
+							dir.prediction.forEach(item => collected.push(this.collectPredData(item)))
+						} else if (Array.isArray(dir)) {
+							dir.forEach(item => {
+								if (item.prediction.length > 1) {
+									item.prediction.forEach(innerPred => collected.push(this.collectPredData(innerPred)))
+								} else {
+									collected.push(this.collectPredData(item.prediction))
+								}
+							})
+						} else {
+							collected.push(this.collectPredData(dir.prediction))
+						}
+					}
+					return collected
+				},
+				collectPredData(predObj) {
+					return {
+						'branch': this.getBusNum(predObj.dirTag),
+						'time': parseInt(predObj.epochTime),
+						'affectedByLayover': predObj.affectedByLayover ? true : false
+					};
+				},
+				getBusNum(tag) {
+					tag = tag.split('_')
+					return tag[tag.length - 1]
 				},
 				topClicked() {
-					console.log('topClicked');
-
 					const base = 'http://webservices.nextbus.com/service/publicJSONFeed?command=predictionsForMultiStops&a=ttc&stops='
-					const top1QueryParams = this.top1Options.filter(s => s.selected).map(s => s.num + '|' + s.stopTag).join('&stops')
-					const top2QueryParams = this.top2Options.filter(s => s.selected).map(s => s.num + '|' + s.stopTag).join('&stops')
+					const top1QueryParams = this.top1Options.filter(s => s.selected).map(s => s.num + '|' + s.stopTag).join('&stops=')
+					const top2QueryParams = this.top2Options.filter(s => s.selected).map(s => s.num + '|' + s.stopTag).join('&stops=')
 
-					axios.get(base + top1QueryParams)
-						.then(d => {
-							console.log(d.data.predictions);
-							console.log(this.top1Preds);
-
-							this.top1Preds = d.data.predictions
-							console.log(this.top1Preds);
-						})
-						.catch(e => console.log(e))
-
-					axios.get(base + top2QueryParams)
-						.then(d => {
-							this.top2Preds = d.data.predictions
-						})
-						.catch(e => console.log(e))
+					if (top1QueryParams.length > 0) {
+						axios.get(base + top1QueryParams)
+							.then(d => {
+								const stopPredTimes = this.getStopPredTimes(d.data.predictions);
+								this.top1Preds = stopPredTimes;
+							})
+							.catch(e => console.log(e))
+					}
+					if (top2QueryParams.length > 0) {
+						axios.get(base + top2QueryParams)
+							.then(d => {
+								const stopPredTimes = this.getStopPredTimes(d.data.predictions);
+								this.top2Preds = stopPredTimes;
+							})
+							.catch(e => console.log(e))
+					}
 				}
 			},
-			created() {
-				console.log(this._data)
-			}
 		})
 
 	</script>
