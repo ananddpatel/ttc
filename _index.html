@@ -1,402 +1,85 @@
-<!doctype html>
-
 <html lang="en">
-
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1, user-scalable=0">
-	<title>myTTC</title>
-	<meta name="description" content="myTTC">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-	 crossorigin="anonymous">
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg"
-	 crossorigin="anonymous">
-	<style>
-		body {
-			background-color: #fffff4;
-		}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>home2work</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <style>
+	    body {
+	    	background-color: #fffff4;
+	    }
+    	thead th {
+			text-align: center;
+    	}
+    	tbody td:first-child {
+			text-align: left;
+    	}
+    	#app tbody td {
+			padding: 5px 10px;
+    	}
+    	p {
+    		margin-bottom: 0;
+    	}
 
-		/* XS styling */
+    	td.a-time, td.b-time {
+    		text-align: center;
+    	}
 
-		@media (max-width: @screen-xs-max) {
-			.container {
-				width: inherit;
-			}
-		}
+    	td p {
+    		font-size: 12px;
+    	}
 
-		/* SM styling */
+    	.hidden {
+    		display: none;
+    	}
 
-		@media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
-			.container {
-				width: inherit;
-			}
-		}
+    	tbody td.a-bus, tbody td.b-bus {
+    		padding: 12px !important;
+    	}
 
-		.xxs {
-			font-size: xx-small;
-		}
-
-		.cell {
-			/* height: 45px; */
-			/* padding: 3px 3px; */
-			border-bottom: 1px solid #fffff4;
-			border-left: 1px solid #fffff4;
-		}
-
-		.bus-num {
-			font-size: 12px;
-			border: 2px solid red;
-		}
-
-		.bg-off-white {
-			background-color: #f8f9fa;
-		}
-
-		.th {
-			padding: .75rem;
-			border-top: 1px solid #e9ecef;
-			border-bottom: 2px solid #e9ecef;
-		}
-
-		.opt-selected {
-			color: white;
-			background-color: #41b883;
-			border-bottom: 2px solid #143000;
-			margin-right: 3px;
-		}
-
-		.accordian-head {
-			background: whitesmoke;
-			border: 2px solid #ececec;
-			border-radius: 2px;
-		}
-
-		.slide-enter-active,
-		.slide-leave-active {
-			transition: opacity .25s;
-		}
-
-		.slide-enter,
-		.slide-leave-to {
-			opacity: 0;
-		}
-	</style>
+    	h3 {
+    		color: #212529;
+    	}
+    </style>
 </head>
-
 <body>
-	<div id="app" class="container">
-		<h3 @click="topClicked()" class="text-center">{{topHeader}}
-			<i class="fas fa-building"></i>
-		</h3>
-		<div class="row">
-			<div class="col-6 px-0">
-				<bus-nums @all-toggle="allSelected" @bus-num-selected="selectBusNum" :options="top1Options"></bus-nums>
-			</div>
-			<div class="col-6 px-0">
-				<bus-nums @all-toggle="allSelected" @bus-num-selected="selectBusNum" :options="top2Options"></bus-nums>
-			</div>
-			<div class="col-6 px-0">
-				<pred-cells v-if="top1Preds" :limit="10" :times="top1Preds"></pred-cells>
-			</div>
-			<div class="col-6 px-0">
-				<pred-cells v-if="top2Preds" :limit="10" :times="top2Preds"></pred-cells>
-			</div>
+
+	<div id="app">
+
+		<div id="errors"></div>
+		<div id="home2work">
+			<h3 class="text-center">Work<small class="hidden">...</small></h3>
+			<table class="table table-striped table-hover">
+				<thead>
+					<tr class="bg-light">
+						<th colspan="2">Jane <span class="badge badge-pill badge-success">S</span><small> 35/195</small></th>
+						<th colspan="2">Wilson <span class="badge badge-pill badge-danger">W</span><small> 96/186</small></th>
+					</tr>
+				</thead>
+				<tbody>
+
+				</tbody>
+			</table>
 		</div>
-		<h3 @click="bottomClicked()" class="text-center mt-1">{{bottomHeader}}
-			<i class="fab fa-fort-awesome"></i>
-		</h3>
-		<div class="row">
-			<div class="col-6 px-0">
-				<bus-nums @all-toggle="allSelected" @bus-num-selected="selectBusNum" :options="bottom1Options"></bus-nums>
-			</div>
-			<div class="col-6 px-0">
-				<bus-nums @all-toggle="allSelected" @bus-num-selected="selectBusNum" :options="bottom2Options"></bus-nums>
-			</div>
-			<div class="col-6 px-0">
-				<pred-cells v-if="bottom1Preds" :limit="10" :times="bottom1Preds"></pred-cells>
-			</div>
-			<div class="col-6 px-0">
-				<pred-cells v-if="bottom2Preds" :limit="10" :times="bottom2Preds"></pred-cells>
-			</div>
+
+		<div id="work2home">
+			<h3 class="text-center">Home<small class="hidden">...</small></h3>
+			<table class="table table-striped table-hover">
+				<thead>
+					<tr class="bg-light">
+						<th colspan="2">Humber <span class="badge badge-pill badge-warning">E</span><small> 96/186</small></th>
+						<th colspan="2">Jane <span class="badge badge-pill badge-primary">N</span><small> 35/195</small></th>
+					</tr>
+				</thead>
+				<tbody>
+
+				</tbody>
+			</table>
 		</div>
+
 	</div>
-	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-	<!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
-	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-	<script>
-		let busNums = Vue.component('bus-nums', {
-			props: ['options'],
-			data: function () {
-				return {
-					allSelected: true
-				}
-			},
-			computed: {
-				isAllSelected() {
-					for (const o of this.options) {
-						if (!o.selected) {
-							this.allSelected = false;
-							return false
-						}
-					}
-					return true
-				}
-			},
-			methods: {
-				toggleAll() {
-					this.allSelected = !this.allSelected;
-					this.$emit('all-toggle', this.options, this.allSelected);
-				},
-				checkAndSetAllSelected() {
-					for (const o of this.options) {
-						if (!this.options) {
-							this.allSelected = false;
-							break;
-						}
-					}
-				}
-			},
-			template: `
-					<div class="d-flex flex-wrap align-content-between justify-content-around bg-off-white th py-1">
-					<span @click="toggleAll()" class="badge" :class=" {'opt-selected': isAllSelected} ">all</span>
-					<span
-						v-for="opt in options"
-						unselectable="on"
-						:class="{ 'opt-selected': opt.selected}"
-						class="badge"
-						@click="$emit('bus-num-selected', opt); checkAndSetAllSelected()">
-							{{opt.name}}
-					</span>
-					</div>`
-		})
 
-		Vue.component('pred-cells', {
-			props: ['times', 'limit'],
-			data: function () {
-				return {
-
-				}
-			},
-			methods: {
-				timeDiff(then) {
-					then = new Date(then)
-					let now = new Date()
-
-					let seconds = Math.floor((then - (now)) / 1000);
-					let minutes = Math.floor(seconds / 60);
-					let hours = Math.floor(minutes / 60);
-					let days = Math.floor(hours / 24);
-
-					hours = hours - (days * 24);
-					minutes = minutes - (days * 24 * 60) - (hours * 60);
-					seconds = seconds - (days * 24 * 60 * 60) - (hours * 60 * 60) - (minutes * 60);
-					seconds = seconds.toString()
-					let secModified = seconds < 10 ? '0' + seconds : seconds;
-					return minutes + ':' + secModified
-				},
-				getHMS(time) {
-					const d = new Date(time)
-					return d.toLocaleString('en-US').split(', ')[1]
-				},
-				accordianToggle(key) {
-					this.times[key].show = !this.times[key].show
-				},
-			},
-			template: `
-    <div class="text-center">
-    <div v-for="(val, key) in times" :key="key">
-		
-		<div class="accordian">
-			<div class="accordian-head">
-				<small class="xxs" @click="accordianToggle(key)">{{key}} | {{val.title}}</small>
-			</div>
-			<transition name="slide">
-			<div v-show="val.show" class="accordian-body px-3">
-				<div v-for="item in val.times" :key="item.time.time" class="row d-flex align-items-center cell alert-primary">
-					<div class="col-3">
-						<span class="badge badge-success">{{item.branch}}</span>
-					</div>
-					<div class="col-9">
-						<span>{{timeDiff(item.time)}} min</span>
-						<p class="mb-0"><small class="text-muted">{{getHMS(item.time)}}</small></p>
-					</div>
-				</div>
-			</div>
-			</transition>
-		</div>
-    </div>
-    </div>
-			`,
-		})
-
-		let app = new Vue({
-			el: '#app',
-			data: {
-				topHeader: 'Work',
-				bottomHeader: 'Home',
-				top1Options: [
-					// { name: 'All', num: 'all', stopTag: 0, selected: true },
-					{ name: '35-S', num: 35, stopTag: 7300, selected: true },
-					{ name: '195-S', num: 195, stopTag: 7300, selected: true },
-					{ name: '120-E', num: 120, stopTag: 7300, selected: true },
-					{ name: '35-N', num: 35, stopTag: 8405, selected: true },
-					{ name: '195-N', num: 195, stopTag: 8405, selected: true },
-					{ name: '120-W', num: 120, stopTag: 8405, selected: true }
-				],
-				top1Preds: null,
-				top2Options: [
-					// { name: 'All', num: 'all', stopTag: 0, selected: true },
-					{ name: '84-E', num: 84, stopTag: 8363, selected: true },
-					{ name: '186-E', num: 186, stopTag: 5041, selected: true },
-					{ name: '96-E', num: 96, stopTag: 5041, selected: true },
-					{ name: '165-E', num: 165, stopTag: 5041, selected: true },
-					{ name: '118-E', num: 118, stopTag: 5041, selected: true },
-					{ name: '119-E', num: 119, stopTag: 5041, selected: true }
-				],
-				top2Preds: null,
-				bottom1Options: [
-					// { name: 'All', num: 'all', stopTag: 0, selected: true },
-					{ name: '120-W', num: 120, stopTag: '15290_ar', selected: true },
-					{ name: '186-W', num: 186, stopTag: 15108, selected: true },
-					{ name: '96-W', num: 96, stopTag: 14827, selected: true },
-					{ name: '165-W', num: 165, stopTag: 14318, selected: true },
-					{ name: '118-W', num: 118, stopTag: '14319_ar', selected: true },
-					{ name: '119-W', num: 119, stopTag: '14319_ar', selected: true }
-				],
-				bottom1Preds: null,
-				bottom2Options: [
-					// { name: 'All', num: 'all', stopTag: 0, selected: true },
-					{ name: '35-N', num: 35, stopTag: 8970, selected: true },
-					{ name: '195-N', num: 195, stopTag: 8970, selected: true },
-				],
-				bottom2Preds: null,
-			},
-			computed: {
-
-			},
-			methods: {
-				isSelected(opt) {
-					if (opt.selected) {
-						return true
-					} else {
-						return false
-					}
-				},
-				selectBusNum(opt) {
-					opt.selected = !opt.selected;
-				},
-				allSelected(options, allSelectedStatus) {
-					options.forEach(o => o.selected = allSelectedStatus)
-				},
-				getStopPredTimes(predictions) {
-
-					var times = {} //
-					predictions.forEach(singleBusRoute => {
-						var tag = singleBusRoute.stopTag
-						stopTimes = times[tag] // key
-						var t = this.collectTimes(singleBusRoute);
-						if (!times[tag]) {
-							var obj = {
-								times: t,
-								show: false,
-								title: singleBusRoute.stopTitle
-							};
-
-							times[tag] = obj;
-						}
-						else {
-							times[tag].times = times[tag].times.concat(t);
-						}
-					})
-
-					// sort based on time
-					for (var stopTag of Object.keys(times)) {
-						times[stopTag].times = times[stopTag].times.sort((a, b) => a.time - b.time)
-					}
-					times[Object.keys(times)[0]].show = true;
-					return times;
-				},
-				collectTimes(singleBusRoute) {
-					collected = []
-					var dir = singleBusRoute.direction
-					if (dir) {
-						// for route that only has 1 type of bus: dir = obj
-						// for multi busses dir = array
-						if (Array.isArray(dir.prediction)) {
-							dir.prediction.forEach(item => collected.push(this.collectPredData(item)))
-						} else if (Array.isArray(dir)) {
-							dir.forEach(item => {
-								if (item.prediction.length > 1) {
-									item.prediction.forEach(innerPred => collected.push(this.collectPredData(innerPred)))
-								} else {
-									collected.push(this.collectPredData(item.prediction))
-								}
-							})
-						} else {
-							collected.push(this.collectPredData(dir.prediction))
-						}
-					}
-					return collected
-				},
-				collectPredData(predObj) {
-					return {
-						'branch': this.getBusNum(predObj.dirTag),
-						'time': parseInt(predObj.epochTime),
-						'affectedByLayover': predObj.affectedByLayover ? true : false
-					};
-				},
-				getBusNum(tag) {
-					tag = tag.split('_')
-					return tag[tag.length - 1]
-				},
-				topClicked() {
-					const base = 'http://webservices.nextbus.com/service/publicJSONFeed?command=predictionsForMultiStops&a=ttc&stops='
-					const top1QueryParams = this.top1Options.filter(s => s.selected).map(s => s.num + '|' + s.stopTag).join('&stops=')
-					const top2QueryParams = this.top2Options.filter(s => s.selected).map(s => s.num + '|' + s.stopTag).join('&stops=')
-
-					if (top1QueryParams.length > 0) {
-						axios.get(base + top1QueryParams)
-							.then(d => {
-								const stopPredTimes = this.getStopPredTimes(d.data.predictions);
-								this.top1Preds = stopPredTimes;
-							})
-							.catch(e => console.log(e))
-					}
-					if (top2QueryParams.length > 0) {
-						axios.get(base + top2QueryParams)
-							.then(d => {
-								const stopPredTimes = this.getStopPredTimes(d.data.predictions);
-								this.top2Preds = stopPredTimes;
-							})
-							.catch(e => console.log(e))
-					}
-				},
-				bottomClicked() {
-					const base = 'http://webservices.nextbus.com/service/publicJSONFeed?command=predictionsForMultiStops&a=ttc&stops='
-					const bottom1QueryParams = this.bottom1Options.filter(s => s.selected).map(s => s.num + '|' + s.stopTag).join('&stops=')
-					const bottom2QueryParams = this.bottom2Options.filter(s => s.selected).map(s => s.num + '|' + s.stopTag).join('&stops=')
-
-					if (bottom1QueryParams.length > 0) {
-						axios.get(base + bottom1QueryParams)
-							.then(d => {
-								const stopPredTimes = this.getStopPredTimes(d.data.predictions);
-								this.bottom1Preds = stopPredTimes;
-							})
-							.catch(e => console.log(e))
-					}
-					if (bottom2QueryParams.length > 0) {
-						axios.get(base + bottom2QueryParams)
-							.then(d => {
-								const stopPredTimes = this.getStopPredTimes(d.data.predictions);
-								this.bottom2Preds = stopPredTimes;
-							})
-							.catch(e => console.log(e))
-					}
-				}
-			},
-		})
-
-	</script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="main.js"></script>
 </body>
-
 </html>
