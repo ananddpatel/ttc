@@ -32,9 +32,15 @@
 			}
 		}
 
+		.xxs {
+			font-size: xx-small;
+		}
+
 		.cell {
-			height: 45px;
-			padding: 3px 3px;
+			/* height: 45px; */
+			/* padding: 3px 3px; */
+			border-bottom: 1px solid #fffff4;
+			border-left: 1px solid #fffff4;
 		}
 
 		.bus-num {
@@ -46,10 +52,33 @@
 			background-color: #f8f9fa;
 		}
 
+		.th {
+			padding: .75rem;
+			border-top: 1px solid #e9ecef;
+			border-bottom: 2px solid #e9ecef;
+		}
+
 		.opt-selected {
 			color: white;
 			background-color: #41b883;
-			border-bottom: 4px solid #143000;
+			border-bottom: 2px solid #143000;
+			margin-right: 3px;
+		}
+
+		.accordian-head {
+			background: whitesmoke;
+			border: 2px solid #ececec;
+			border-radius: 2px;
+		}
+
+		.slide-enter-active,
+		.slide-leave-active {
+			transition: opacity .25s;
+		}
+
+		.slide-enter,
+		.slide-leave-to {
+			opacity: 0;
 		}
 	</style>
 </head>
@@ -60,36 +89,34 @@
 			<i class="fas fa-building"></i>
 		</h3>
 		<div class="row">
-			<div class="col-6">
+			<div class="col-6 px-0">
 				<bus-nums @all-toggle="allSelected" @bus-num-selected="selectBusNum" :options="top1Options"></bus-nums>
 			</div>
-			<div class="col-6">
+			<div class="col-6 px-0">
 				<bus-nums @all-toggle="allSelected" @bus-num-selected="selectBusNum" :options="top2Options"></bus-nums>
 			</div>
 			<div class="col-6 px-0">
-				<!-- <div class="cell alert-primary" v-for="num in 5">asd</div> -->
-				<pred-cells v-if="top1Preds" :times="top1Preds"></pred-cells>
+				<pred-cells v-if="top1Preds" :limit="10" :times="top1Preds"></pred-cells>
 			</div>
 			<div class="col-6 px-0">
-				<!-- <div class="cell alert-primary" v-for="num in 5">asd</div> -->
-				<pred-cells v-if="top2Preds" :times="top2Preds"></pred-cells>
+				<pred-cells v-if="top2Preds" :limit="10" :times="top2Preds"></pred-cells>
 			</div>
 		</div>
-		<h3 class="text-center mt-1">{{bottomHeader}}
+		<h3 @click="bottomClicked()" class="text-center mt-1">{{bottomHeader}}
 			<i class="fab fa-fort-awesome"></i>
 		</h3>
 		<div class="row">
-			<div class="col-6">
+			<div class="col-6 px-0">
 				<bus-nums @all-toggle="allSelected" @bus-num-selected="selectBusNum" :options="bottom1Options"></bus-nums>
 			</div>
-			<div class="col-6">
+			<div class="col-6 px-0">
 				<bus-nums @all-toggle="allSelected" @bus-num-selected="selectBusNum" :options="bottom2Options"></bus-nums>
 			</div>
 			<div class="col-6 px-0">
-				<div class="cell alert-primary" v-for="num in 5">asd</div>
+				<pred-cells v-if="bottom1Preds" :limit="10" :times="bottom1Preds"></pred-cells>
 			</div>
 			<div class="col-6 px-0">
-				<div class="cell alert-primary" v-for="num in 5">asd</div>
+				<pred-cells v-if="bottom2Preds" :limit="10" :times="bottom2Preds"></pred-cells>
 			</div>
 		</div>
 	</div>
@@ -104,36 +131,47 @@
 					allSelected: true
 				}
 			},
+			computed: {
+				isAllSelected() {
+					for (const o of this.options) {
+						if (!o.selected) {
+							this.allSelected = false;
+							return false
+						}
+					}
+					return true
+				}
+			},
 			methods: {
 				toggleAll() {
 					this.allSelected = !this.allSelected;
 					this.$emit('all-toggle', this.options, this.allSelected);
-				}
-			},
-			mounted() {
-				for (const o of this.options) {
-					if (!this.options) {
-						this.allSelected = false;
-						break;
+				},
+				checkAndSetAllSelected() {
+					for (const o of this.options) {
+						if (!this.options) {
+							this.allSelected = false;
+							break;
+						}
 					}
 				}
 			},
 			template: `
-					<div class="d-flex flex-wrap align-content-between justify-content-around bg-off-white py-1">
-					<span @click="toggleAll()" class="badge" :class=" {'opt-selected': allSelected} ">all</span>
+					<div class="d-flex flex-wrap align-content-between justify-content-around bg-off-white th py-1">
+					<span @click="toggleAll()" class="badge" :class=" {'opt-selected': isAllSelected} ">all</span>
 					<span
 						v-for="opt in options"
 						unselectable="on"
 						:class="{ 'opt-selected': opt.selected}"
 						class="badge"
-						@click="$emit('bus-num-selected', opt)">
+						@click="$emit('bus-num-selected', opt); checkAndSetAllSelected()">
 							{{opt.name}}
 					</span>
 					</div>`
 		})
 
 		Vue.component('pred-cells', {
-			props: ['times'],
+			props: ['times', 'limit'],
 			data: function () {
 				return {
 
@@ -141,7 +179,6 @@
 			},
 			methods: {
 				timeDiff(then) {
-					// debugger;
 					then = new Date(then)
 					let now = new Date()
 
@@ -160,21 +197,33 @@
 				getHMS(time) {
 					const d = new Date(time)
 					return d.toLocaleString('en-US').split(', ')[1]
-				}
+				},
+				accordianToggle(key) {
+					this.times[key].show = !this.times[key].show
+				},
 			},
 			template: `
-    <div>
+    <div class="text-center">
     <div v-for="(val, key) in times" :key="key">
-        <h5>{{key}}</h5>
-        <div v-for="item in val" :key="item.time" class="cell alert-primary">
-            <div class="col-3">
-                <span class="badge badge-danger">{{item.branch}}</span>
-            </div>
-            <div class="col-9">
-                {{timeDiff(item.time)}}
-                <p><small>{{getHMS(item.time)}}</small></p>
-            </div>
-        </div>
+		
+		<div class="accordian">
+			<div class="accordian-head">
+				<small class="xxs" @click="accordianToggle(key)">{{key}} | {{val.title}}</small>
+			</div>
+			<transition name="slide">
+			<div v-show="val.show" class="accordian-body px-3">
+				<div v-for="item in val.times" :key="item.time.time" class="row d-flex align-items-center cell alert-primary">
+					<div class="col-3">
+						<span class="badge badge-success">{{item.branch}}</span>
+					</div>
+					<div class="col-9">
+						<span>{{timeDiff(item.time)}} min</span>
+						<p class="mb-0"><small class="text-muted">{{getHMS(item.time)}}</small></p>
+					</div>
+				</div>
+			</div>
+			</transition>
+		</div>
     </div>
     </div>
 			`,
@@ -240,17 +289,31 @@
 					options.forEach(o => o.selected = allSelectedStatus)
 				},
 				getStopPredTimes(predictions) {
-					let times = {} //
+
+					var times = {} //
 					predictions.forEach(singleBusRoute => {
 						var tag = singleBusRoute.stopTag
 						stopTimes = times[tag] // key
+						var t = this.collectTimes(singleBusRoute);
 						if (!times[tag]) {
-							times[tag] = this.collectTimes(singleBusRoute);
+							var obj = {
+								times: t,
+								show: false,
+								title: singleBusRoute.stopTitle
+							};
+
+							times[tag] = obj;
 						}
 						else {
-							times[tag] = times[tag].concat(this.collectTimes(singleBusRoute));
+							times[tag].times = times[tag].times.concat(t);
 						}
 					})
+
+					// sort based on time
+					for (var stopTag of Object.keys(times)) {
+						times[stopTag].times = times[stopTag].times.sort((a, b) => a.time - b.time)
+					}
+					times[Object.keys(times)[0]].show = true;
 					return times;
 				},
 				collectTimes(singleBusRoute) {
@@ -304,6 +367,28 @@
 							.then(d => {
 								const stopPredTimes = this.getStopPredTimes(d.data.predictions);
 								this.top2Preds = stopPredTimes;
+							})
+							.catch(e => console.log(e))
+					}
+				},
+				bottomClicked() {
+					const base = 'http://webservices.nextbus.com/service/publicJSONFeed?command=predictionsForMultiStops&a=ttc&stops='
+					const bottom1QueryParams = this.bottom1Options.filter(s => s.selected).map(s => s.num + '|' + s.stopTag).join('&stops=')
+					const bottom2QueryParams = this.bottom2Options.filter(s => s.selected).map(s => s.num + '|' + s.stopTag).join('&stops=')
+
+					if (bottom1QueryParams.length > 0) {
+						axios.get(base + bottom1QueryParams)
+							.then(d => {
+								const stopPredTimes = this.getStopPredTimes(d.data.predictions);
+								this.bottom1Preds = stopPredTimes;
+							})
+							.catch(e => console.log(e))
+					}
+					if (bottom2QueryParams.length > 0) {
+						axios.get(base + bottom2QueryParams)
+							.then(d => {
+								const stopPredTimes = this.getStopPredTimes(d.data.predictions);
+								this.bottom2Preds = stopPredTimes;
 							})
 							.catch(e => console.log(e))
 					}
